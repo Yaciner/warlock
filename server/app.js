@@ -40,7 +40,7 @@ io.on(`connection`, socket => {
   console.log(sid);
 
   const qr = qrcode(0, `L`); //TYPENUMBER, 'CORRECTION LEVEL'
-  qr.addData(`${`http://192.168.43.87:8080` + `/` + `controller.html?id=`}${  sid}`);
+  qr.addData(`${`https://warlockapp.herokuapp.com` + `/` + `controller.html?id=`}${  sid}`);
   qr.make();
   const qrDom = qr.createImgTag(4, 4 * 4);
   socket.emit(`qrDom`, qrDom);
