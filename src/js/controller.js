@@ -1,5 +1,9 @@
-let socket, targetId;
-const Shake = require('shake.js');
+let socket, targetId, sceneTarget;
+const Shake = require(`shake.js`);
+import io from 'socket.io-client';
+const $ontdek = document.querySelector(`.button-ontdek`);
+const $volgende = document.querySelector(`.button-volgende`);
+
 
 const init = () => {
   targetId = getUrlParameter(`id`);
@@ -9,9 +13,11 @@ const init = () => {
   }
 
   socket = io.connect(`/`);
-  console.log(`CONTROLLER.JS`);
 
   window.addEventListener(`deviceorientation`, handleOrientation, true);
+  $ontdek.addEventListener(`click`, handleOntdek);
+  $volgende.addEventListener(`click`, handleVolgende);
+  window.addEventListener(`touchmove`, handleTouch);
   shake();
 };
 
@@ -20,6 +26,24 @@ const getUrlParameter = name => {
   const regex = new RegExp(`[\\?&]${  name  }=([^&#]*)`);
   const results = regex.exec(location.search);
   return results === null ? false : decodeURIComponent(results[1].replace(/\+/g, ` `));
+};
+
+const handleOntdek = e => {
+  sceneTarget = 2;
+  e.preventDefault();
+  socket.emit(`update`, targetId, {
+    target: sceneTarget
+  });
+  window.scrollTo(0, window.innerHeight);
+};
+
+const handleVolgende = e => {
+  e.preventDefault();
+  sceneTarget ++;
+  socket.emit(`update`, targetId, {
+    target: sceneTarget
+  });
+
 };
 
 const handleOrientation = e => {
@@ -32,16 +56,24 @@ const handleOrientation = e => {
 };
 
 const shake = () => {
-  let shakeEvent = new Shake({threshold: 15});
+  const shakeEvent = new Shake({threshold: 15});
   shakeEvent.start();
   window.addEventListener(`shake`, sendAlert)
 }
 
 const sendAlert = e => {
-  socket.emit('update', targetId, {
+  socket.emit(`update`, targetId, {
     shaked: true
   });
   document.getElementById(`title`).innerHTML = `shaked`;
 }
+
+const handleTouch = e => {
+  socket.emit(`update`, targetId, {
+    x: e.touches[0].clientX / window.innerWidth,
+    y: e.touches[0].clientY / window.innerHeight
+  });
+
+};
 
 init();

@@ -3,9 +3,8 @@ import HoverEffect from './lib/hoverEffect';
 const $servants = document.querySelector(`.servants`);
 import io from 'socket.io-client';
 const divRoot = document.getElementById(`inputVideo`);
-let faceMode = affdex.FaceDetectorMode.LARGE_FACES;
-let detector = new affdex.CameraDetector(divRoot, 1280, 720, faceMode);
-let points = [];
+const faceMode = affdex.FaceDetectorMode.LARGE_FACES;
+const detector = new affdex.CameraDetector(divRoot, 1280, 720, faceMode);
 let socket = [];
 let pause = 0;
 const $gradient = document.querySelector(`.gradient`);
@@ -27,6 +26,8 @@ const colors = new tracking.ColorTracker(`magenta`);
 const $videoInput = document.querySelector(`.inputVideo`);
 const $heart = document.querySelector(`.heart`);
 
+import SweetScroll from 'sweet-scroll';
+
 
 const init = () => {
 
@@ -38,6 +39,31 @@ const init = () => {
     });
 
   });
+  socket.on(`update`, data => {
+    console.log(data.target);
+    if (data.target === 2) {
+      console.log(`nu moet hij scrollen`);
+      window.scrollTo(0, window.innerHeight);
+    }
+
+    if (data.target === 3) {
+      console.log(`nu moet hij scrollen`);
+      window.scrollTo(0, window.innerHeight * 2);
+    }
+
+    if (data.target === 4) {
+      console.log(`nu moet hij scrollen`);
+      window.scrollTo(0, window.innerHeight * 3);
+    }
+
+    if (data.target === 5) {
+      console.log(`nu moet hij scrollen`);
+      window.scrollTo(0, window.innerHeight * 4);
+    }
+  });
+
+  setScrolling();
+
   scene1();
   scene2();
   scene3();
@@ -46,8 +72,13 @@ const init = () => {
   scene6();
 };
 
+const setScrolling = () => {
+
+
+}
+
 const scene1 = () => {
-  console.log('scene1');
+  console.log(`scene1`);
 }
 
 const scene2 = () => {
@@ -153,10 +184,10 @@ detector.addEventListener("onWebcamConnectFailure", function() {
 }
 
 const handleEmotion = (faces) => {
-  if (faces[0]){
-    if(faces[0].expressions.smile > 20) {
+  if (faces[0]) {
+    if (faces[0].expressions.smile > 20) {
       pause ++;
-      if (pause === 3){
+      if (pause === 3) {
         changeName();
         pause = 0;
       }
@@ -165,9 +196,10 @@ const handleEmotion = (faces) => {
 };
 
 const startNextScene = () => {
-  console.log('VOLGENDE SCÈNE');
+  console.log(`VOLGENDE SCÈNE`);
   detector.stop();
-}
+  window.scrollTo(0, window.innerHeight * 3);
+};
 
 const changeName = () => {
   index += 1;
@@ -176,7 +208,7 @@ const changeName = () => {
     index = 0;
   }
   $witchName.innerHTML = names[index];
-}
+};
 
 const onAnythingSaid = text => {
   spokenText = displayedText + text;

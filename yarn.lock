@@ -6362,6 +6362,10 @@ svgo@^0.7.0:
     sax "~1.2.1"
     whet.extend "~0.9.9"
 
+sweet-scroll@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/sweet-scroll/-/sweet-scroll-3.0.0.tgz#8de075ef41138c9aa6dbe7168855a4a8dccaf832"
+
 synesthesia@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/synesthesia/-/synesthesia-1.0.1.tgz#5ef95ea548c0d5c6e6f9bb4b0d0731dff864a777"

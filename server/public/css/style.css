@@ -388,3 +388,12 @@ h1 {
   z-index: 5;
   transform: scale(2);
 }
+
+.key {
+  position: absolute;
+  transform: scale(.1);
+  opacity: .8;
+  z-index: 1;
+  left: 3%;
+  top: 44%;
+}

@@ -40,8 +40,8 @@ io.on(`connection`, socket => {
   console.log(sid);
 
   const qr = qrcode(0, `L`); //TYPENUMBER, 'CORRECTION LEVEL'
-  qr.addData(`${`http://192.168.1.40:8080` + `/` + `controller.html?id=`}${  sid}`);
-  console.log(`${`http://192.168.1.40:8080` + `/` + `controller.html?id=`}${  sid}`);
+  qr.addData(`${`http://192.168.43.87:8080` + `/` + `controller.html?id=`}${  sid}`);
+  console.log(`${`http://192.168.43.87:8080` + `/` + `controller.html?id=`}${  sid}`);
   qr.make();
   const qrDom = qr.createImgTag(4, 4 * 4);
   socket.emit(`qrDom`, qrDom);
@@ -52,6 +52,11 @@ io.on(`connection`, socket => {
     }
     socket.to(users[targetId].id).emit(`update`, data);
   });
+
+  socket.on(`sceneTarget`, sceneTarget => {
+    console.log(sceneTarget);
+  });
+
 
   socket.on(`disconnect`, () => {
     console.log(`disconnect`);

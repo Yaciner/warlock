@@ -9,6 +9,7 @@ section {
   width: 100vw;
   height: 100vh;
   background-image: url(../assets/img/scn1_background.jpg);
+  background-size: cover;
   background-repeat: none;
   overflow: hidden;
   display: flex;
@@ -23,7 +24,16 @@ h1 {
   font-size: 4rem;
 }
 
-.button {
+.button-ontdek {
+  padding: 1rem 2rem;
+  font-family: Cardinal;
+  font-size: 2.5rem;
+  background-color: black;
+  border: none;
+  color: rgba(255, 255, 255, .7);
+}
+
+.button-volgende {
   padding: 1rem 2rem;
   font-family: Cardinal;
   font-size: 2.5rem;
