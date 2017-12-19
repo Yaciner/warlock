@@ -1,5 +1,5 @@
 import HoverEffect from './lib/hoverEffect';
-//import Scene3 from './lib/emotion-detector';
+//import Scene3 from `./lib/emotion-detector`;
 const $servants = document.querySelector(`.servants`);
 import io from 'socket.io-client';
 const divRoot = document.getElementById(`inputVideo`);
@@ -23,10 +23,16 @@ const totalFrames = 300;
 let counter = 0;
 
 const colors = new tracking.ColorTracker(`magenta`);
-const $videoInput = document.querySelector(`.inputVideo`);
-const $heart = document.querySelector(`.heart`);
+const $videoInput = document.querySelector(`.video`);
+const $maskingInput = document.querySelector(`.video-7`);
+const $heart = document.querySelector(`.heart-6`);
+const $key = document.querySelector(`.key`);
 
 import SweetScroll from 'sweet-scroll';
+
+let xAverage = 0;
+let yAverage = 0;
+const warlock = document.querySelector(`.warlock-7`);
 
 
 const init = () => {
@@ -40,7 +46,6 @@ const init = () => {
 
   });
   socket.on(`update`, data => {
-    console.log(data.target);
     if (data.target === 2) {
       console.log(`nu moet hij scrollen`);
       window.scrollTo(0, window.innerHeight);
@@ -65,71 +70,74 @@ const init = () => {
   setScrolling();
 
   scene1();
-  scene2();
-  scene3();
-  scene4();
-  scene5();
-  scene6();
 };
 
 const setScrolling = () => {
-
-
-}
+  console.log(`setScrolling`);
+};
 
 const scene1 = () => {
   console.log(`scene1`);
-}
+  scene2();
+  scene3();
+};
 
 const scene2 = () => {
   socket.on(`update`, data => {
-    console.log(`z: ${data.alpha}`);
-    console.log(`x: ${data.beta}`);
-    console.log(`y: ${data.gamma}`);
     HoverEffect($servants, data.beta, data.gamma, 40);
   });
-}
+};
 
 const scene3 = () => {
   initialiseCamera();
   setEventsDetector();
   setClassifiersDetector();
   initialiseDetector();
-}
+};
 
 const scene4 = () => {
   const listener = new SpeechToText(onAnythingSaid, onFinalised);
   listener.startListening();
   socket.on(`update`, data => {
-  $gradient.setAttribute(`style`, `background: radial-gradient(circle closest-corner at ${data.x * 100  }% ${data.y * 100 }%, white -10%, #121, black 60%)`);
-});
-}
+    $gradient.setAttribute(`style`, `background: radial-gradient(circle closest-corner at ${data.x * 100  }% ${data.y * 100 }%, white -10%, #121, black 60%)`);
+    const keyTop = ($key.getBoundingClientRect().top / window.innerHeight) * 100;
+    const keyLeft = ($key.getBoundingClientRect().left / window.innerWidth) * 100;
+  // let keyWidth = ($key.getBoundingClientRect().width / window.innerWidth) * 100;
+  // let keyHeight = ($key.getBoundingClientRect().height / window.innerHeight) * 100;
+
+    if ((data.y * 100) > keyTop && (data.y * 100) < keyTop + 5 && (data.x * 100) > keyLeft && (data.x * 100) < keyLeft + 5) {
+      scene5();
+      window.scrollTo(0, window.innerHeight * 4);
+    }
+  });
+};
 
 const scene5 = () => {
   for (let i = 0;i < paths.length;i ++) {
-  const path = paths[i];
-  const length = path.getTotalLength();
+    const path = paths[i];
+    const length = path.getTotalLength();
 
-  path.style.strokeDasharray = `${length} ${length}`;
-  path.style.strokeDashoffset = length;
-}
-
-socket.on(`connect`, () => {
-  socket.on(`qrDom`, qrDom => {
-    document.getElementById(`placeholder`).innerHTML = qrDom;
-  });
-});
-
-socket.on('update', data => {
-  if (data.shaked){
-      draw();
+    path.style.strokeDasharray = `${length} ${length}`;
+    path.style.strokeDashoffset = length;
   }
-});
-}
+
+  socket.on(`connect`, () => {
+    socket.on(`qrDom`, qrDom => {
+      document.getElementById(`placeholder`).innerHTML = qrDom;
+    });
+  });
+
+  socket.on(`update`, data => {
+    if (data.shaked) {
+      draw();
+    }
+  });
+};
 
 const scene6 = () => {
+  window.scrollTo(0, window.innerHeight * 5);
   startTracking();
-}
+};
 
 const initialiseCamera = () => {
   navigator.getUserMedia = navigator.getUserMedia ||
@@ -141,8 +149,10 @@ const initialiseCamera = () => {
           stream => {
 
             divRoot.srcObject = stream;
+            $maskingInput.srcObject = stream;
             divRoot.onloadedmetadata = () => {
               divRoot.play();
+              $maskingInput.play();
               tracking.track($videoInput, colors);
             };
           },
@@ -150,44 +160,30 @@ const initialiseCamera = () => {
             console.log(`The following error occurred: ${  err.name}`);
           }
        );
-    } else {
-      console.log(`getUserMedia not supported`);
-    }
-}
+  } else {
+    console.log(`getUserMedia not supported`);
+  }
+};
 
 const initialiseDetector = () => {
   detector.start();
-}
+};
 
 const setClassifiersDetector = () => {
   // Track smiles
   detector.detectExpressions.smile = true;
-}
+};
 
 
 const setEventsDetector = () => {
-  detector.addEventListener("onInitializeSuccess", function() {console.log('success')});
-  detector.addEventListener("onInitializeFailure", function() {console.log('failure')});
-  detector.addEventListener("onImageResultsSuccess", function (faces, image, timestamp) {handleEmotion(faces);});
-  detector.addEventListener("onImageResultsFailure", function (image, timestamp, err_detail) {console.log('resultsfailed')});
-  detector.addEventListener("onResetSuccess", function() {});
-  detector.addEventListener("onResetFailure", function() {});
-  detector.addEventListener("onStopSuccess", function() {});
-  detector.addEventListener("onStopFailure", function() {});
-  detector.addEventListener("onWebcamConnectSuccess", function() {
-	console.log("I was able to connect to the camera successfully.");
-});
+  detector.addEventListener(`onImageResultsSuccess`, function (faces) {handleEmotion(faces);handleMasking(faces);});
+};
 
-detector.addEventListener("onWebcamConnectFailure", function() {
-	console.log("I've failed to connect to the camera :(");
-});
-}
-
-const handleEmotion = (faces) => {
+const handleEmotion = faces => {
   if (faces[0]) {
     if (faces[0].expressions.smile > 20) {
       pause ++;
-      if (pause === 3) {
+      if (pause === 12) {
         changeName();
         pause = 0;
       }
@@ -195,9 +191,29 @@ const handleEmotion = (faces) => {
   }
 };
 
+const handleMasking = faces => {
+  console.log(`masking`);
+  let x = 0;
+  let y = 0;
+
+  if (faces[0]) {
+    for (let i = 0;i < 34;i ++) {
+      x = x + faces[0].featurePoints[i].x;
+      y = y + faces[0].featurePoints[i].x;
+    }
+
+    xAverage = x / 34;
+    yAverage = y / 34;
+
+    warlock.style.left = `${((xAverage / window.innerWidth) - ((warlock.width / 3) / window.innerWidth)) * 100}%`;
+    warlock.style.top = `${((yAverage / window.innerHeight) - ((warlock.height / 1.5) / window.innerHeight)) * 100}%`;
+  }
+};
+
 const startNextScene = () => {
   console.log(`VOLGENDE SCÈNE`);
   detector.stop();
+  scene4();
   window.scrollTo(0, window.innerHeight * 3);
 };
 
@@ -223,6 +239,8 @@ const onFinalised = text => {
 const draw = () => {
 
   const progress = currentFrame / totalFrames;
+  console.log(progress);
+  console.log(paths.length);
   currentFrame ++;
   counter ++;
 
@@ -233,7 +251,7 @@ const draw = () => {
     path.style.strokeDashoffset = Math.floor(length * (1 - progress));
   }
 
-  handle = requestAnimationFrame(draw);
+  const handle = requestAnimationFrame(draw);
 
   if (counter >= totalFrames / 3) {
     cancelAnimationFrame(handle);
@@ -242,6 +260,7 @@ const draw = () => {
 
   if (progress >= 1) {
     cancelAnimationFrame(handle);
+    scene6();
   }
 };
 
@@ -249,22 +268,23 @@ const startTracking = () => {
   colors.on(`track`, event => {
     if (event.data.length === 0) {
       console.log(`no data`);
-    }
-
-    else {
+    } else {
       $heart.style.left = `${window.innerWidth - event.data[0].x  }px`;
-      // balEl.style.top = `${event.data[0].y  }px`;
-      console.log('detecting color');
-      let rect = $heart.getBoundingClientRect();
-      if (rect.left < 350){
+      const rect = $heart.getBoundingClientRect();
+      if (rect.left < 350) {
         stopTracking();
+        scene7();
       }
     }
   });
 };
 
 const stopTracking = () => {
-  $heart.style.left = `350px`;
-}
+  $heart.style.left = `30%`;
+};
+
+const scene7 = () => {
+
+};
 
 init();

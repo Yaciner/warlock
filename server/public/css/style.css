@@ -246,7 +246,6 @@ h1 {
 
 .brush {
   position: absolute;
-  left: -8.5rem;
   width: 100vw;
   height: 100vh;
 }
@@ -282,6 +281,15 @@ h1 {
   height: 100vh;
   position: absolute;
   background: radial-gradient(circle closest-corner at 50% 50%, white -10%, #121, black 60%);
+}
+
+.key {
+  position: absolute;
+  transform: scale(.1);
+  opacity: .8;
+  z-index: 1;
+  left: 65%;
+  top: 2%;
 }
 
 /* SCENE 5 */
@@ -354,6 +362,8 @@ h1 {
   opacity: 0;
 }
 
+/* SCENE 7 */
+
 .scn7_1 {
   width: 40rem;
   position: absolute;
@@ -372,28 +382,17 @@ h1 {
 .video-7 {
   width: 100vw;
   height: 100vh;
-  z-index: 4;
+  z-index: 14;
 }
 
 .logo-7 {
   top: 7rem;
   left: 5.5rem;
   transform: scale(.8);
-  z-index: 4;
+  z-index: 10;
 }
 
 .warlock-7 {
-  left: 50%;
-  top: 45%;
   z-index: 5;
-  transform: scale(2);
-}
-
-.key {
-  position: absolute;
-  transform: scale(.1);
-  opacity: .8;
-  z-index: 1;
-  left: 3%;
-  top: 44%;
+  width: 100vw;
 }

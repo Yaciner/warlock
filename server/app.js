@@ -41,7 +41,6 @@ io.on(`connection`, socket => {
 
   const qr = qrcode(0, `L`); //TYPENUMBER, 'CORRECTION LEVEL'
   qr.addData(`${`http://192.168.43.87:8080` + `/` + `controller.html?id=`}${  sid}`);
-  console.log(`${`http://192.168.43.87:8080` + `/` + `controller.html?id=`}${  sid}`);
   qr.make();
   const qrDom = qr.createImgTag(4, 4 * 4);
   socket.emit(`qrDom`, qrDom);
